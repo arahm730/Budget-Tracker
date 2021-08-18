@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div id="add-cash">
+        <form action ="/expense" method="post">
+        <input type="text" name="expenseName" placeholder="Name of Expense">
+        <input type="text" name="expenseAmount" placeholder="Dollars">
+        <button type="submit" name = "submit" value = "submit" class="btn btn-primary mb-2">Submit</button>
+        <button type="submit" name = "show_expense" value = "show_expense" class="btn btn-primary mb-2">Show expense history</button>
+    </div>
+    
+{% endblock %}

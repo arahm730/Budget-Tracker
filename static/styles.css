@@ -1,0 +1,70 @@
+body {
+    min-height: -webkit-fill-available;
+    background-color: blueviolet;
+    overflow: hidden;
+  }
+
+button {
+  height: 50px;
+  width: 200px;
+}
+
+h1 {
+  font-weight: bold;
+  margin-bottom: 50px;
+}
+
+img {
+  background: transparent;
+}
+
+input {
+  height: 50px;
+  width: 200px;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+p {
+  font-weight: bold;
+  font-size: 40px;
+}
+
+a:hover {
+  background-color: rgb(110, 78, 255);
+}
+
+#cash {
+  position: absolute;
+  top: 5%;
+  left: 5%;
+}
+
+#main-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  float: center;
+  width: 80%;
+  height: 90%;
+  overflow: auto;
+  margin: auto;
+  position: absolute;
+  top: 0; left: 270px; bottom: 0; right: 0;
+  border: solid black;
+  background-color: gold;
+  overflow: hidden;
+}
+
+#sidebar {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  min-height: 100vh;
+  float: left;
+}
