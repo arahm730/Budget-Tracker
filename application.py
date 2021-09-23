@@ -1,5 +1,5 @@
 from flask import Flask, redirect, render_template, request, session
-from datetime import date 
+from datetime import date, datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 
@@ -22,6 +22,7 @@ today = date.today().strftime("%m/%d/%y")
 
 user_id = ""
 
+
 @app.route('/')
 def index():
     if not user_id:
@@ -36,12 +37,19 @@ def index():
             cur.execute("SELECT * FROM budget WHERE user_id = ?", (user_id,))
             budget_data = cur.fetchall()
             expense_names = []
+            line_data = {}
             amount = []
             if budget_data:
                 print(budget_data)
                 for i in budget_data:
                     expense_names.append(i[1].upper())
                     amount.append(i[2])
+                    print(line_data)
+                    if i[0] in line_data:
+                        line_data[i[0]] += i[2]
+                    else:
+                        line_data[i[0]] = 0 
+                    print(line_data)
                 total = sum(amount)
                 dollar_formatted = []
                 for k in amount:
@@ -50,16 +58,37 @@ def index():
                 for j in amount:
                     formatted_amount.append(j / total * 100)
                 y = np.array(formatted_amount)
-                pie, text = plt.pie(y, labels = dollar_formatted)
-                plt.legend(pie, expense_names, bbox_to_anchor=(1.05, 1), loc="upper left")
-                plt.savefig('static/images/plot.png', transparent=True)
-                plt.close()
-                return render_template("index.html", cash = cash, url = 'static/images/plot.png')
+                pie, text = plt.pie(y, labels=dollar_formatted)
+                plt.legend(pie, expense_names, bbox_to_anchor=(1.05, 1), loc="upper left", prop={"size":12})
+                plt.savefig('static/images/plot.png', transparent=True,  bbox_inches='tight')
+                plt.clf()
+                plt.figure()
+                recent_dates = list(line_data.keys())
+                recent_dollars = list(line_data.values())
+                print(recent_dates)
+                print(recent_dollars)
+                plt.plot(recent_dates, recent_dollars, color='red', marker='o')
+                plt.ylim(bottom=0)
+                plt.title('Recent expenses', fontsize=14)
+                plt.xlabel('Date', fontsize=14)
+                plt.ylabel('Dollars spent', fontsize=14)
+                plt.savefig('static/images/plot2.png', transparent=True)
+                plt.clf()
+                return render_template("index.html", cash = cash, url = 'static/images/plot.png', url2='static/images/plot2.png')
             else:
                 plt.pie([100], labels = ["ENTER AN EXPENSE"])
                 plt.savefig('static/images/default.png', transparent=True)
-                plt.close()
-                return render_template("index.html", cash = cash, url = 'static/images/default.png')
+                plt.clf()
+                plt.figure()
+                plt.plot([today], [0])
+                plt.ylim(0,1)
+                plt.title('Recent expenses', fontsize=14)
+                plt.xlabel('Date', fontsize=14)
+                plt.ylabel('Dollars spent', fontsize=14)
+                plt.savefig('static/images/default2.png', transparent=True)
+                plt.clf()
+                return render_template("index.html", cash = cash, url = 'static/images/default.png', url2='static/images/default2.png')
+
 
 @app.route('/login', methods =["GET", "POST"])
 def login():
@@ -80,6 +109,7 @@ def login():
     else:
         return render_template("login.html")
 
+
 @app.route('/register', methods =["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -94,6 +124,7 @@ def register():
         return redirect("/login")
     else:
         return render_template("register.html")
+
 
 @app.route('/income', methods=["GET", "POST"])
 def income():
@@ -114,6 +145,7 @@ def income():
         return redirect("/")
     else:
         return render_template("income.html")
+
 
 @app.route('/expense', methods=["GET", "POST"])
 def expense():
@@ -145,6 +177,7 @@ def expense():
             return render_template("expense-table.html", rows=rows)
     else:
         return render_template("expense.html")
+
 
 @app.route('/logout')
 def logout():
